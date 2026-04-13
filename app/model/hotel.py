@@ -6,7 +6,7 @@ from app.services.util import (
     generate_unique_id,
     guest_not_found_error,
     room_not_available_error,
-    reservation_not_found_error
+    reservation_not_found_error, room_already_exists_error, date_lower_than_today_error, room_not_found_error
 )
 
 @dataclass
@@ -99,3 +99,28 @@ class Room:
             current += timedelta(days=1)
 
 class Hotel:
+    def __init__(self):
+        self.rooms: dict[int, Room] = {}
+        self.reservations: dict[str, Reservation] = {}
+
+    def add_room(self, number: int, type_: str, price_per_night: float):
+        if number in self.rooms:
+            room_already_exists_error()
+        else:
+            self.rooms[number] = Room(number, type_, price_per_night)
+
+    def make_reservation(self, guest_name: str, description: str, room_number: int, check_in: date, check_out: date):
+        today = datetime.now().date()
+        if check_in < today:
+            date_lower_than_today_error()
+
+        elif room_number not in self.rooms:
+            room_not_found_error()
+        else:
+            reservation = Reservation(guest_name, description, check_in, check_out)
+
+            self.rooms[room_number].book(reservation.id, check_in, check_out)
+
+            self.reservations[reservation.id] = reservation
+
+            return reservation.id

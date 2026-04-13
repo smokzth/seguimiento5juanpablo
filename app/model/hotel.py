@@ -8,6 +8,17 @@ from app.services.util import (generate_unique_id, date_lower_than_today_error,
 
 
 # TODO: Implement Guest class here
+@dataclass
+class Guest:
+    REGULAR: ClassVar = "regular"
+    VIP: ClassVar = "vip"
+    name: str
+    email: str
+    type_: REGULAR = REGULAR
+
+    def __str__(self) -> str:
+        return f"Guest({self.name}, ({self.email}) of type {self.type_})"
+
 
 
 # TODO: Implement Reservation class here
